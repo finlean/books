@@ -2,6 +2,8 @@
 
 TANGiMING
 
+2018-7-30
+
 =======
 # JavaScript 原型与原型链
 
