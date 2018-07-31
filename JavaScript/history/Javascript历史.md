@@ -36,9 +36,8 @@
 - ### 标准化
 	1997 年，JavaScript 1.1 作为一个草案提交给欧洲计算机制造商协会 [ECMA](http://www.ecma-international.org/memento/TC39.htm)。第 39 技术委员会（TC39）被委派来“标准化一个通用、跨平台、中立于厂商的脚本语言的语法和语义。由来自 Netscape、Sun、微软、Borland 和其他一些对脚本编程感兴趣的公司的程序员组成的 TC39 锤炼出了 ECMA-262，该标准定义了名为 ECMAScript 的全新脚本语言。在接下来的几年里，国际标准化组织及国际电工委员会（ISO/IEC）也采纳 ECMAScript 作为标准（ISO/IEC-16262）。从此，Web 浏览器就开始努力（虽然有着不同的程度的成功和失败）将 ECMAScript 作为 JavaScript 实现的基础。    
 
-	纵观整个Javascript 的发展史，网络的发展使得Javascript 的诞生，而各个厂商和公司的利益竞争，给Javascript 带来了不统一，受影响却是苦逼的前端工程师。(ps： Js 还好啦(/偷笑)，CSS 那才是前端开发者痛苦地根源，IE6怎么还没死)。
+	纵观整个Javascript 的发展史，网络的发展使得Javascript 的诞生，而各个厂商和公司的利益竞争，给Javascript 带来了不统一，受影响却是苦逼的前端工程师。(ps： Js 还好啦(/偷笑)，CSS 那才是前端开发者痛苦地根源，还好IE6/7/8已经差不多死了，这个得同时感谢360)。
 
-  ### 下一章 带着大家一起来看看Javascript 语言特性
 
 ## 以下是ECMA各个版本 变化
 
