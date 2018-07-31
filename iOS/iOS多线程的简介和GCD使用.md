@@ -188,8 +188,6 @@ dispatch_queue_t queue = dispatch_queue_create("testQueue", DISPATCH_QUEUE_CONCU
 
 - 以先进先出的方式，只有当主线程的代码执行完毕后，主队列才会调度任务到主线程执行
 
-  
-
 ---
 
 
