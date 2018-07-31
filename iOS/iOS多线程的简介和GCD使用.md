@@ -1,0 +1,175 @@
+ ### iOS多线程的简介
+
+###### Copyright © 2018年 shenyong. 
+
+在系统运行的过程中要实现并发功能往往可以用过多线程来解决。假如一个运行中的进程任务只有一个主线程的情况，那么所有的任务都会以队列的方式依次执行，这样造成的情况就是效率低下，特别是耗时耗量的任务会导致线程堵塞。
+
+##### 多线程的优缺点
+
+优点
+
+- 能够适当提高程序的执行效率
+- 能够提高资源的利用率（CPU、内存利用率）
+- 将耗时任务开辟新线程异步执行防止堵塞主线程提高用户体验
+
+缺点
+
+- 开启一条线程就需要占用内存空间，如果开启大量线程会占用大量空间，从而降低程序性能
+- 线程越多程序设计越复杂
+
+##### iOS实现多线程的方案
+
+在iOS中实现多线程有以下四种方案
+
+- pthread
+- NSThread
+- GCD
+- NSOperation
+
+|  技术方案   |                      简介                       | 语言 | 线程生命周期 | 使用频率 |
+| :---------: | :---------------------------------------------: | :--: | :----------: | :------: |
+|   pthread   |     pthread是一种纯 C 语言提供的多线程方案      |  C   |  程序员管理  | 几乎不用 |
+|  NSThread   |   NSThread 是对 pthread 进行了面向对象的封装    |  OC  |  程序员管理  | 偶尔使用 |
+|     GCD     | GCD是苹果公司专门为多核的并行运算提出的解决方案 |  C   |   自动管理   | 经常使用 |
+| NSOperation |             底层基于GCD更加面向对象             |  OC  |   自动管理   | 经常使用 |
+
+***
+
+### GCD的使用
+
+GCD作为iOS多线程的常用方案，简单易用且十分强大，我们只要告诉GCD需要执行什么任务。
+
+首先我们先了解一下异步、同步 & 并行、串行的特点
+
+|          |            并行队列            |             串行队列             |             主队列             |
+| :------: | :----------------------------: | :------------------------------: | :----------------------------: |
+| 异步执行 | 开启多个新的线程，任务同时执行 | 开启一个新的线程，任务按顺序执行 | 不开启新的线程，任务按顺序执行 |
+| 同步执行 | 不开启新的线程，任务按顺序执行 |  不开启新的线程，任务按顺序执行  |              死锁              |
+
+###### 异步执行+并行队列
+
+- 创建方法
+
+```
+dispatch_queue_t queue = dispatch_queue_create("testQueue", DISPATCH_QUEUE_CONCURRENT);
+```
+
+- 使用
+
+``` 
+  dispatch_queue_t queue = dispatch_queue_create("testQueue", DISPATCH_QUEUE_CONCURRENT);
+   //使用异步函数封装三个任务
+        dispatch_async(queue, ^{
+            NSLog(@"任务1---");
+        });
+        dispatch_async(queue, ^{
+            NSLog(@"任务2---");
+        });
+        dispatch_async(queue, ^{
+            NSLog(@"任务3---");
+        });
+  
+```
+
+我们多次执行以上代码打印:
+
+![image-20180731005625968](/var/folders/7p/rkfkjm5143q0vh5cvjtht94w0000gn/T/abnerworks.Typora/image-20180731005625968.png)
+
+![image-20180731005648686](/var/folders/7p/rkfkjm5143q0vh5cvjtht94w0000gn/T/abnerworks.Typora/image-20180731005648686.png)
+
+![image-20180731005718832](/var/folders/7p/rkfkjm5143q0vh5cvjtht94w0000gn/T/abnerworks.Typora/image-20180731005718832.png)
+
+可以发现在并行队列中三个任务的执行完成的先后并不固定，这是因为它们是并发队列，任务之间不需要排队，且同时具有被执行的“权利”。
+
+***
+
+###### 异步执行+串行队列
+
+- 创建方法
+
+```
+dispatch_queue_t queue = dispatch_queue_create("net.bujige.testQueue", DISPATCH_QUEUE_SERIAL);
+```
+
+- 使用
+
+```
+  dispatch_queue_t queue = dispatch_queue_create("标识符", DISPATCH_QUEUE_SERIAL);
+        
+        NSLog(@"---start---");
+        //使用异步函数封装三个任务
+        dispatch_async(queue, ^{
+            NSLog(@"任务1---");
+        });
+        dispatch_async(queue, ^{
+            NSLog(@"任务2---");
+        });
+        dispatch_async(queue, ^{
+            NSLog(@"任务3---");
+        });
+```
+
+打印结果每次执行总是相同，意味着在串行队列中任务按照添加进队列的顺序依次执行
+
+![image-20180731010423007](/var/folders/7p/rkfkjm5143q0vh5cvjtht94w0000gn/T/abnerworks.Typora/image-20180731010423007.png)
+
+###### 同步执行+并发队列
+
+```
+dispatch_queue_t queue = dispatch_queue_create("testQueue", DISPATCH_QUEUE_CONCURRENT);
+//使用同步函数封装三个任务
+    dispatch_sync(queue, ^{
+        NSLog(@"任务1---%@", [NSThread currentThread]);
+    });
+    dispatch_sync(queue, ^{
+        NSLog(@"任务2---%@", [NSThread currentThread]);
+    });
+    dispatch_sync(queue, ^{
+        NSLog(@"任务3---%@", [NSThread currentThread]);
+    });
+```
+
+多次执行打印结果相同：
+
+![image-20180731010942330](/var/folders/7p/rkfkjm5143q0vh5cvjtht94w0000gn/T/abnerworks.Typora/image-20180731010942330.png)
+
+同步执行意味着不能开启新的线程，任务必须创建完成后才能往下走
+
+***
+
+###### 同步执行+串行队列
+
+```
+ dispatch_queue_t queue = dispatch_queue_create("testQueue", DISPATCH_QUEUE_SERIAL);
+    dispatch_sync(queue, ^{
+        NSLog(@"任务1---%@", [NSThread currentThread]);
+    });
+    dispatch_sync(queue, ^{
+        NSLog(@"任务2---%@", [NSThread currentThread]);
+    });
+    dispatch_sync(queue, ^{
+        NSLog(@"任务3---%@", [NSThread currentThread]);
+    });
+```
+
+执行结果和同步执行+串行队列相同。
+
+所以说只有是同步执行（sync）就意味着无法开启新的线程，所以多个任务之间也一样按照顺序执行
+
+###### 主队列
+
+- 主队列的特点是不需要自己创建，可以直接通过dispatch_get_main_queue()函数来获取。
+
+- 添加到主队列的任务只能由主线程来执行。
+
+- 以先进先出的方式，只有当主线程的代码执行完毕后，主队列才会调度任务到主线程执行
+
+  
+
+---
+
+
+
+#### 总结
+
+通过上面我们大概了解了队列和同步异步的几种组合方法，在日常开发我们可以根据实际情况选择不同的方式，比如在网络开发中带有依赖关系的网络请求这时候就可以用到同步任务，当某一个请求任务完成后再进行下一个任务。在我们获取加载网络图片这种耗时较长的任务的时候就可以将任务放在异步任务中，这样不会造成堵塞。
