@@ -129,8 +129,6 @@ dispatch_queue_t queue = dispatch_queue_create("net.bujige.testQueue", DISPATCH_
 2018-07-31 17:19:04.396443+0800 GCD[27395:1543435] 任务3---
 ```
 
-
-
 ###### 同步执行+并发队列
 
 ```
