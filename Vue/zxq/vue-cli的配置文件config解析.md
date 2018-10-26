@@ -78,7 +78,7 @@ proxyTable: {}, //e 配置代理 api
     cssSourceMap: false //是否开启cssSourceMap(css资源文件遍历)
 
 build: {<br>
-// Template for index.html 编译后 html 的文件路径
+// Template for index.html 编译后 html 的文件路径<br>
 index: path.resolve(\_\_dirname, "../dist/index.html"),<br>
 
     // Paths
